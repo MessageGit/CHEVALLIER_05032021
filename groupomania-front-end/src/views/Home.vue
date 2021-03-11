@@ -62,8 +62,6 @@ export default {
   width: 70%;
   font-weight: 100;
   font-size: 18px;
-  padding-right: 25px;
-  border-right: 3px solid #cecece;
 }
 
 </style>

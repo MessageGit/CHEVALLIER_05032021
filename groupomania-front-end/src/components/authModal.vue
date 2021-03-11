@@ -6,20 +6,20 @@
     </div>
     <div class="auth-form" v-if="!authType"><!-- Inscription -->
       <div class="input-block">
-        <input type="text" name="username" class="input-form" id="sign-username"/>
-        <label for="sign-username">Nom d'utilisateur</label>
+        <input type="text" name="username" class="input-form" v-model="signData.username" id="sign-username"/>
+        <label for="sign-username" :class="{ 'focus-label' : signData.username }">Nom d'utilisateur</label>
       </div>
       <div class="input-block">
-        <input type="text" name="email" class="input-form" id="sign-email"/>
-        <label for="sign-email">Adresse e-mail</label>
+        <input type="text" name="email" class="input-form" v-model="signData.email" id="sign-email"/>
+        <label for="sign-email" :class="{ 'focus-label' : signData.email }">Adresse e-mail</label>
       </div>
       <div class="input-block">
-        <input type="password" name="passwrd" class="input-form" id="sign-passwrd" />
-        <label for="sign-passwrd">Mot de passe</label>
+        <input type="password" name="passwrd" class="input-form" v-model="signData.passwrd" id="sign-passwrd" />
+        <label for="sign-passwrd" :class="{ 'focus-label' : signData.passwrd }">Mot de passe</label>
       </div>
       <div class="input-block">
-        <input type="password" name="passwrd-rpt" class="input-form" id="sign-passwrdrpt" />
-        <label for="sign-passwrdrpt">Mot de passe (répêtez-le)</label>
+        <input type="password" name="passwrd-rpt" class="input-form" v-model="signData.passwrdrpt" id="sign-passwrdrpt" />
+        <label for="sign-passwrdrpt" :class="{ 'focus-label' : signData.passwrdrpt }">Mot de passe (répêtez-le)</label>
       </div>
     </div>
   </div>
@@ -30,7 +30,8 @@ export default {
   name: 'authModal',
   data() {
     return {
-      authType: 0
+      authType: 0,
+      signData: { username: '', email: '', passwrd: '', passwrdrpt: '' }
     }
   }
 }
@@ -113,5 +114,13 @@ export default {
   left: 15px;
   cursor: text;
   pointer-events: none;
+  transition-duration: 0.2s;
+}
+
+.auth-content .auth-form .input-block .focus-label {
+  position: absolute;
+  margin-bottom: 48px;
+  font-weight: bold;
+  font-size: 14px;
 }
 </style>
