@@ -1,23 +1,23 @@
 <template>
-  <div class="auth-form"><!-- Inscription -->
-    <div class="input-block">
+  <form class="auth-form" @submit.prevent="formSubmit()"><!-- Inscription -->
+    <div class="input-block" :class="{ 'input-error' : formError == 1 }" @click="formError = 0">
       <input type="text" name="username" class="input-form" v-model="formData.username" id="sign-username"/>
       <label for="sign-username" :class="{ 'focus-label' : formData.username }">Nom d'utilisateur</label>
     </div>
-    <div class="input-block">
+    <div class="input-block" :class="{ 'input-error' : formError == 2 }" @click="formError = 0">
       <input type="text" name="email" class="input-form" v-model="formData.email" id="sign-email"/>
       <label for="sign-email" :class="{ 'focus-label' : formData.email }">Adresse e-mail</label>
     </div>
-    <div class="input-block">
+    <div class="input-block" :class="{ 'input-error' : formError >= 3 }" @click="formError = 0">
       <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="sign-passwrd" />
       <label for="sign-passwrd" :class="{ 'focus-label' : formData.passwrd }">Mot de passe</label>
     </div>
-    <div class="input-block">
+    <div class="input-block" :class="{ 'input-error' : formError >= 4 }" @click="formError = 0">
       <input type="password" name="passwrd-rpt" class="input-form" v-model="formData.passwrdrpt" id="sign-passwrdrpt" />
       <label for="sign-passwrdrpt" :class="{ 'focus-label' : formData.passwrdrpt }">Mot de passe (répêtez-le)</label>
     </div>
     <button class="submit-button">Inscription</button>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -25,7 +25,21 @@ export default {
   name: 'signupModal',
   data() {
     return {
-      formData: { username: '', email: '', passwrd: '', passwrdrpt: '' }
+      formData: { username: '', email: '', passwrd: '', passwrdrpt: '' },
+      formError: 0
+    }
+  },
+  methods: {
+    formSubmit() {
+      if(this.formData.username) {
+        if(this.formData.email && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(this.formData.email)) {
+          if(this.formData.passwrd && this.formData.passwrd.length > 5) {
+            if(this.formData.passwrdrpt && this.formData.passwrdrpt === this.formData.passwrd) {
+              alert('ok');
+            } else { this.formError = 4 }
+          } else { this.formError = 3 }
+        } else { this.formError = 2 }
+      } else { this.formError = 1 }
     }
   }
 }
@@ -62,6 +76,8 @@ export default {
 .auth-content .auth-form .input-block:hover::after {
   width: 100%;
 }
+
+.auth-content .auth-form .input-error { background-color: #ffc9c9!important; }
 
 .auth-content .auth-form .input-block .input-form {
   position: relative;
