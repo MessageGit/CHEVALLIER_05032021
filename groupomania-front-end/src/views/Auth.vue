@@ -4,11 +4,11 @@
       <h1>Plus de collaborateurs, plus de discussions..</h1>
       <div class="acc-case" @click="authType = 0" :class="{ 'focus-acc' : !authType }">
         <span class="plus-icon"></span>
-        <span>Vous n'avez pas de compte ?<br />Rejoignez-nous dès-maintenant.</span>
+        <span>Vous n'avez pas de compte ?<br /><b>Rejoignez-nous dès-maintenant.</b></span>
       </div>
       <div class="acc-case" @click="authType = 1" :class="{ 'focus-acc' : authType }">
         <img src="../assets/icons/user-icon.png" id="acc-icon" alt="Connectez-vous">
-        <span>Vous avez déjà un compte ?<br />Connectez-vous.</span>
+        <span>Vous avez déjà un compte ?<br /><b>Connectez-vous.</b></span>
       </div><br /><br />
       <div class="subtitle">Apprenez en plus de vos collègues avec Groupomania, discutez de tout et de rien, l'essentiel, ne pas se perdre de vue !</div>
       <img alt="Groupomania logo" id="auth-vector" src="../assets/img/auth-vector.png">
@@ -38,7 +38,7 @@ export default {
   },
   data() {
     return {
-      authType: 0
+      authType: 1 // Login (default)
     }
   }
 }
@@ -139,21 +139,20 @@ export default {
   background-color: white;
   box-shadow: 0px 0px 20px 4px rgba(0, 0, 0, 0.35);
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .auth-content #website-icon {
-    position: relative;
+    position: absolute;
     top: 45px;
-    margin: 0 auto;
     width: 215px;
 }
 
 .auth-content .auth-form {
   position: relative;
-  margin: 0 auto;
-  margin-top: 130px;
   width: 80%;
-  height: 30px;
 }
 
 .auth-content .social-link {
