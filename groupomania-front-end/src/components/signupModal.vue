@@ -1,19 +1,19 @@
 <template>
   <form class="auth-form" @submit.prevent="formSubmit()"><!-- Inscription -->
-    <div class="input-block" :class="{ 'input-error' : formData.error == 1 }" @click="formData.error = 0">
-      <input type="text" name="username" class="input-form" v-model="formData.username" id="sign-username"/>
+    <div class="input-block" @click="formData.error = 0">
+      <input type="text" name="username" class="input-form" v-model="formData.username" id="sign-username" :class="{ 'input-error' : formData.error == 1 }" />
       <label for="sign-username" :class="{ 'focus-label' : formData.username }">Nom d'utilisateur</label>
     </div>
-    <div class="input-block" :class="{ 'input-error' : formData.error == 2 }" @click="formData.error = 0">
-      <input type="text" name="email" class="input-form" v-model="formData.email" id="sign-email"/>
+    <div class="input-block" @click="formData.error = 0">
+      <input type="text" name="email" class="input-form" v-model="formData.email" id="sign-email" :class="{ 'input-error' : formData.error == 2 }"/>
       <label for="sign-email" :class="{ 'focus-label' : formData.email }">Adresse e-mail</label>
     </div>
-    <div class="input-block" :class="{ 'input-error' : formData.error >= 3 }" @click="formData.error = 0">
-      <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="sign-passwrd" />
+    <div class="input-block" @click="formData.error = 0">
+      <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="sign-passwrd" :class="{ 'input-error' : formData.error >= 3 }" />
       <label for="sign-passwrd" :class="{ 'focus-label' : formData.passwrd }">Mot de passe</label>
     </div>
-    <div class="input-block" :class="{ 'input-error' : formData.error >= 4 }" @click="formData.error = 0">
-      <input type="password" name="passwrd-rpt" class="input-form" v-model="formData.passwrdrpt" id="sign-passwrdrpt" />
+    <div class="input-block" @click="formData.error = 0">
+      <input type="password" name="passwrd-rpt" class="input-form" v-model="formData.passwrdrpt" id="sign-passwrdrpt" :class="{ 'input-error' : formData.error >= 4 }" />
       <label for="sign-passwrdrpt" :class="{ 'focus-label' : formData.passwrdrpt }">Mot de passe (répêtez-le)</label>
     </div>
     <button class="submit-button">Inscription</button>
@@ -76,8 +76,6 @@ export default {
   width: 100%;
 }
 
-.auth-content .auth-form .input-error { background-color: #ffc9c9!important; }
-
 .auth-content .auth-form .input-block .input-form {
   position: relative;
   border: none;
@@ -90,9 +88,8 @@ export default {
   transition-duration: 0.2s;
 }
 
-.auth-content .auth-form .input-block .input-form:focus {
-  background-color: #ececec;
-}
+.auth-content .auth-form .input-block .input-form:focus { background-color: #ececec; }
+.auth-content .auth-form .input-block .input-error { background-color: #ffc9c9!important; }
 
 .auth-content .auth-form .input-block label {
   position: absolute;

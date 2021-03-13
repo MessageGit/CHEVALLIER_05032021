@@ -1,11 +1,11 @@
 <template>
   <form class="auth-form" @submit.prevent="formSubmit()"><!-- Connexion -->
-    <div class="input-block" :class="{ 'input-error' : formData.error == 1 }" @click="formData.error = 0">
-      <input type="text" name="email" class="input-form" v-model="formData.email" id="login-email"/>
+    <div class="input-block" @click="formData.error = 0">
+      <input type="text" name="email" class="input-form" v-model="formData.email" id="login-email" :class="{ 'input-error' : formData.error == 1 }" />
       <label for="login-username" :class="{ 'focus-label' : formData.email }">Votre e-mail</label>
     </div>
-    <div class="input-block" :class="{ 'input-error' : formData.error == 2 }" @click="formData.error = 0">
-      <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="login-passwrd" />
+    <div class="input-block" @click="formData.error = 0">
+      <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="login-passwrd" :class="{ 'input-error' : formData.error == 2 }" />
       <label for="login-passwrd" :class="{ 'focus-label' : formData.passwrd }">Mot de passe</label>
     </div>
     <button class="submit-button">Connexion</button>
