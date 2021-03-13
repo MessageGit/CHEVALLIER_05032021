@@ -1,0 +1,115 @@
+<template>
+  <div class="auth-form"><!-- Inscription -->
+    <div class="input-block">
+      <input type="text" name="username" class="input-form" v-model="formData.username" id="sign-username"/>
+      <label for="sign-username" :class="{ 'focus-label' : formData.username }">Nom d'utilisateur</label>
+    </div>
+    <div class="input-block">
+      <input type="text" name="email" class="input-form" v-model="formData.email" id="sign-email"/>
+      <label for="sign-email" :class="{ 'focus-label' : formData.email }">Adresse e-mail</label>
+    </div>
+    <div class="input-block">
+      <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="sign-passwrd" />
+      <label for="sign-passwrd" :class="{ 'focus-label' : formData.passwrd }">Mot de passe</label>
+    </div>
+    <div class="input-block">
+      <input type="password" name="passwrd-rpt" class="input-form" v-model="formData.passwrdrpt" id="sign-passwrdrpt" />
+      <label for="sign-passwrdrpt" :class="{ 'focus-label' : formData.passwrdrpt }">Mot de passe (répêtez-le)</label>
+    </div>
+    <button class="submit-button">Inscription</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'signupModal',
+  data() {
+    return {
+      formData: { username: '', email: '', passwrd: '', passwrdrpt: '' }
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.auth-content .auth-form .input-block {
+  position: relative;
+  margin: 0 auto;
+  width: 80%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.auth-content .auth-form .input-block::before {
+  content: '';
+  position: absolute;
+  bottom: 0px; left: 0px;
+  width: 100%; height: 2px;
+  background-color: #ececec;
+}
+
+.auth-content .auth-form .input-block::after {
+  content: '';
+  position: absolute;
+  bottom: 0px; left: 0px;
+  width: 0%; height: 2px;
+  background-color: #333;
+  transition-duration: 0.2s;
+}
+
+.auth-content .auth-form .input-block:hover::after {
+  width: 100%;
+}
+
+.auth-content .auth-form .input-block .input-form {
+  position: relative;
+  border: none;
+  outline: 0;
+  background-color: transparent;
+  padding: 15px;
+  font-size: 15px;
+  padding-left: 15px;
+  width: 100%;
+  transition-duration: 0.2s;
+}
+
+.auth-content .auth-form .input-block .input-form:focus {
+  background-color: #ececec;
+}
+
+.auth-content .auth-form .input-block label {
+  position: absolute;
+  left: 15px;
+  cursor: text;
+  pointer-events: none;
+  transition-duration: 0.2s;
+}
+
+.auth-content .auth-form .input-block .focus-label {
+  position: absolute;
+  margin-bottom: 48px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.auth-content .auth-form .submit-button {
+    position: relative;
+    left: 68px;
+    width: 200px; height: 40px;
+    border: none; outline: 0;
+    color: white; font-family: 'Nunito';
+    font-weight: bold; font-size: 14px;
+    border-radius: 5px;
+    background-color: #333;
+    margin: 0 auto; margin-top: 25px;
+    cursor: pointer;
+    transition-duration: 0.25s;
+}
+
+.auth-content .auth-form .submit-button:hover {
+  background-color: #585879;
+  opacity: 0.8;
+}
+</style>
