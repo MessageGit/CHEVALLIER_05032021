@@ -120,6 +120,17 @@ export default {
     transition-duration: 0.25s;
 }
 
+.auth-content .auth-form .submit-button::after {
+    content: '';
+    position: absolute;
+    top: 8px; right: 20px;
+    width: 28px; height: 25px;
+    background: url(/img/arrow-icon.353c91cd.png) no-repeat 100%;
+    background-size: 100% 100%;
+    transform: rotate(270deg);
+    filter: invert(1);
+}
+
 .auth-content .auth-form .submit-button:hover {
   background-color: #585879;
   opacity: 0.8;
