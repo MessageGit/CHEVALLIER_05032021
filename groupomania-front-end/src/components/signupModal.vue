@@ -1,18 +1,18 @@
 <template>
   <form class="auth-form" @submit.prevent="formSubmit()"><!-- Inscription -->
-    <div class="input-block" :class="{ 'input-error' : formError == 1 }" @click="formError = 0">
+    <div class="input-block" :class="{ 'input-error' : formData.error == 1 }" @click="formData.error = 0">
       <input type="text" name="username" class="input-form" v-model="formData.username" id="sign-username"/>
       <label for="sign-username" :class="{ 'focus-label' : formData.username }">Nom d'utilisateur</label>
     </div>
-    <div class="input-block" :class="{ 'input-error' : formError == 2 }" @click="formError = 0">
+    <div class="input-block" :class="{ 'input-error' : formData.error == 2 }" @click="formData.error = 0">
       <input type="text" name="email" class="input-form" v-model="formData.email" id="sign-email"/>
       <label for="sign-email" :class="{ 'focus-label' : formData.email }">Adresse e-mail</label>
     </div>
-    <div class="input-block" :class="{ 'input-error' : formError >= 3 }" @click="formError = 0">
+    <div class="input-block" :class="{ 'input-error' : formData.error >= 3 }" @click="formData.error = 0">
       <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="sign-passwrd" />
       <label for="sign-passwrd" :class="{ 'focus-label' : formData.passwrd }">Mot de passe</label>
     </div>
-    <div class="input-block" :class="{ 'input-error' : formError >= 4 }" @click="formError = 0">
+    <div class="input-block" :class="{ 'input-error' : formData.error >= 4 }" @click="formData.error = 0">
       <input type="password" name="passwrd-rpt" class="input-form" v-model="formData.passwrdrpt" id="sign-passwrdrpt" />
       <label for="sign-passwrdrpt" :class="{ 'focus-label' : formData.passwrdrpt }">Mot de passe (répêtez-le)</label>
     </div>
@@ -25,8 +25,7 @@ export default {
   name: 'signupModal',
   data() {
     return {
-      formData: { username: '', email: '', passwrd: '', passwrdrpt: '' },
-      formError: 0
+      formData: { username: '', email: '', passwrd: '', passwrdrpt: '', error: '' }
     }
   },
   methods: {
@@ -36,10 +35,10 @@ export default {
           if(this.formData.passwrd && this.formData.passwrd.length > 5) {
             if(this.formData.passwrdrpt && this.formData.passwrdrpt === this.formData.passwrd) {
               alert('ok');
-            } else { this.formError = 4 }
-          } else { this.formError = 3 }
-        } else { this.formError = 2 }
-      } else { this.formError = 1 }
+            } else { this.formData.error = 4 }
+          } else { this.formData.error = 3 }
+        } else { this.formData.error = 2 }
+      } else { this.formData.error = 1 }
     }
   }
 }
