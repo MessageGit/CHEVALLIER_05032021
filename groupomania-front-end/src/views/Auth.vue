@@ -15,8 +15,8 @@
     </div>
     <div class="auth-content">
       <img alt="Groupomania logo" id="website-icon" src="../assets/icons/web-icon-black.png">
-      <signupModal v-if="!authType" />
-      <loginModal v-else />
+      <signupModal @isValid="sessionAlias" v-if="!authType" />
+      <loginModal :alias="aliasLogin" v-else />
       <div class="social-link">
         <img src="../assets/icons/social/facebook-icon.png" alt="Facebook">
         <img src="../assets/icons/social/twitter-icon.png" alt="Twitter">
@@ -38,7 +38,14 @@ export default {
   },
   data() {
     return {
-      authType: 1 // Login (default)
+      authType: 1, // Login (default)
+      aliasLogin: ''
+    }
+  },
+  methods: {
+    sessionAlias(email) {
+      this.authType = 1;
+      this.aliasLogin = email
     }
   }
 }
