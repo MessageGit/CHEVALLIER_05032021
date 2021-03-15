@@ -1,7 +1,26 @@
 const db = require("../models/index.js");
 const Users = db.users;
 
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+
+exports.login = (req, res, next) => { // Connexion
+    if(!req.body.email || !req.body.passwrd)return res.status(400).send({message: "La requête soumise est incomplète."});
+
+    Users.findOne({ where: {email: req.body.email} })
+        .then(data => {
+            if(!data)return res.status(401).send({error_code: 1, message: 'L\'identifiant saisie ne correspond à aucun compte.' });
+            bcrypt.compare(req.body.passwrd, data.password)
+            .then(valid => {
+                if(!valid)return res.status(401).send({error_code: 2, message: 'Le mot de passe saisi est incorrect.' });
+                const newToken = jwt.sign({tokenUser: data.username }, 'TOK3N_S3CR3T', { expiresIn: '24h' });
+                res.setHeader('Authorization', 'Bearer ' + newToken);
+                res.status(201).send({error_code: 0, token: newToken, message: 'Connexion établie.'});
+            })
+            .catch(error => res.status(500).send({error_code: 5, message: 'Une erreur est survenue (' + error + ')'}));
+        })
+        .catch(error => res.status(500).send({error_code: 3, message: 'Une erreur est survenue (' + error + ')'}));
+}
 
 exports.signup = (req, res, next) => { // Inscription
     if(!req.body.username || !req.body.email || !req.body.passwrd || req.body.passwrd != req.body.passwrdrpt)return res.status(400).send({message: "La requête soumise est incomplète."});
@@ -39,8 +58,4 @@ exports.signup = (req, res, next) => { // Inscription
             if(conflict == 2) return res.status(401).send({error_code: 2, message: "Cet email est déjà utilisé par quelqu'un."});
         }
     }
-}
-
-exports.login = (req, res, next) => {
-    console.log('Connexion');
 }

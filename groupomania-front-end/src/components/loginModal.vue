@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import store from '../modules/store.json'
+
 export default {
   name: 'loginModal',
   props: ['alias'],
@@ -29,9 +31,30 @@ export default {
     formSubmit() {
       if(this.formData.email && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(this.formData.email)) {
         if(this.formData.passwrd && this.formData.passwrd.length > 5) {
-          alert('ok');
+          this.fetchLogin();
         } else { this.formData.error = 2; this.formData.errortxt = 'Votre mot de passe ne peut pas être aussi court'; }
       } else { this.formData.error = 1; this.formData.errortxt = 'Le format de l\'adresse mail saisie est incorrect'; }
+    },
+    fetchLogin() {
+      this.formData.error = 0; this.formData.errortxt = '';
+      const login_request = { email: this.formData.email, passwrd: this.formData.passwrd }
+      fetch(store.host_api + '/auth/login', { /* Fetch to API */
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(login_request),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(!data.error_code) { // Login is valid
+          alert('connected !\n\n' + data.token)
+        } else { // Login is not valid
+          this.formData.error = data.error_code;
+          this.formData.errortxt = data.message;
+        }
+      })
+      .catch((error) => { this.formData.error = 99; this.formData.errortxt = 'Une erreur est survenue (' + error +')'; });
     }
   }
 }
