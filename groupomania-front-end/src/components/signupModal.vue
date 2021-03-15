@@ -1,5 +1,6 @@
 <template>
-  <form class="auth-form" @submit.prevent="formSubmit()"><!-- Inscription -->
+  <form class="auth-form" autocomplete="off" @submit.prevent="formSubmit()"><!-- Inscription -->
+    <div class="auth-error" v-if="formData.error">{{ formData.errortxt }}</div>
     <div class="input-block" @click="formData.error = 0">
       <input type="text" name="username" class="input-form" v-model="formData.username" id="sign-username" :class="{ 'input-error' : formData.error == 1 }" />
       <label for="sign-username" :class="{ 'focus-label' : formData.username }">Nom d'utilisateur</label>
@@ -9,11 +10,11 @@
       <label for="sign-email" :class="{ 'focus-label' : formData.email }">Adresse e-mail</label>
     </div>
     <div class="input-block" @click="formData.error = 0">
-      <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="sign-passwrd" :class="{ 'input-error' : formData.error >= 3 }" />
+      <input type="password" name="passwrd" class="input-form" v-model="formData.passwrd" id="sign-passwrd" :class="{ 'input-error' : formData.error >= 3 && formData.error <= 4 }" />
       <label for="sign-passwrd" :class="{ 'focus-label' : formData.passwrd }">Mot de passe</label>
     </div>
     <div class="input-block" @click="formData.error = 0">
-      <input type="password" name="passwrd-rpt" class="input-form" v-model="formData.passwrdrpt" id="sign-passwrdrpt" :class="{ 'input-error' : formData.error >= 4 }" />
+      <input type="password" name="passwrd-rpt" class="input-form" v-model="formData.passwrdrpt" id="sign-passwrdrpt" :class="{ 'input-error' : formData.error == 4 }" />
       <label for="sign-passwrdrpt" :class="{ 'focus-label' : formData.passwrdrpt }">Mot de passe (répêtez-le)</label>
     </div>
     <button class="submit-button">Inscription</button>
@@ -21,11 +22,13 @@
 </template>
 
 <script>
+import store from '../modules/store.json'
+
 export default {
   name: 'signupModal',
   data() {
     return {
-      formData: { username: '', email: '', passwrd: '', passwrdrpt: '', error: '' }
+      formData: { username: '', email: '', passwrd: '', passwrdrpt: '', error: 0, errortxt: '' }
     }
   },
   methods: {
@@ -34,17 +37,51 @@ export default {
         if(this.formData.email && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(this.formData.email)) {
           if(this.formData.passwrd && this.formData.passwrd.length > 5) {
             if(this.formData.passwrdrpt && this.formData.passwrdrpt === this.formData.passwrd) {
-              alert('ok');
-            } else { this.formData.error = 4 }
-          } else { this.formData.error = 3 }
-        } else { this.formData.error = 2 }
-      } else { this.formData.error = 1 }
+              this.fetchSignup();
+            } else { this.formData.error = 4; this.formData.errortxt = 'Vos mots de passes ne correspondent pas'; }
+          } else { this.formData.error = 3; this.formData.errortxt = 'Votre mot de passe doit être plus long'; }
+        } else { this.formData.error = 2; this.formData.errortxt = 'Votre adresse mail semble incorrecte'; }
+      } else { this.formData.error = 1; this.formData.errortxt = 'Vous devez saisir un nom d\'utilisateur'; }
+    },
+    fetchSignup() {
+      this.formData.error = 0; this.formData.errortxt = '';
+      fetch(store.host_api + '/auth/signup', { /* Fetch to API */
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.formData),
+      })
+      .then(response => response.json())
+      .then(data => { 
+        if(!data.error_code) { // Registration is valid
+          this.$emit('isValid', this.formData.email);
+        } else { // Registration get error
+          this.formData.error = data.error_code;
+          this.formData.errortxt = data.message;
+        }
+      })
+      .catch((error) => { this.formData.error = 99; this.formData.errortxt = 'Une erreur est survenue (' + error +')'; });
     }
   }
 }
 </script>
 
 <style lang="scss">
+.auth-content .auth-form .auth-error {
+  position: relative;
+  margin: 0 auto;
+  width: 75%;
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  background-color: #ececec;
+  padding: 2.5%;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.auth-content .auth-form .email-defined { background-color: #e8f0fe; }
 .auth-content .auth-form .input-block {
   position: relative;
   margin: 0 auto;
@@ -88,8 +125,8 @@ export default {
   transition-duration: 0.2s;
 }
 
-.auth-content .auth-form .input-block .input-form:focus { background-color: #ececec; }
-.auth-content .auth-form .input-block .input-error { background-color: #ffc9c9!important; }
+.auth-content .auth-form .input-block .input-form:focus { background-color: #e8f0fe; }
+.auth-content .auth-form .input-block .input-error { background-color: #fff0f0!important; }
 
 .auth-content .auth-form .input-block label {
   position: absolute;
@@ -125,7 +162,7 @@ export default {
     position: absolute;
     top: 8px; right: 20px;
     width: 28px; height: 25px;
-    background: url(/img/arrow-icon.353c91cd.png) no-repeat 100%;
+    background: url(../assets/icons/arrow-icon.png) no-repeat 100%;
     background-size: 100% 100%;
     transform: rotate(270deg);
     filter: invert(1);
