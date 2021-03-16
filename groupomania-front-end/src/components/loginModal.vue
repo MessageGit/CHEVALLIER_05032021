@@ -48,7 +48,8 @@ export default {
       .then(response => response.json())
       .then(data => {
         if(!data.error_code) { // Login is valid
-          alert('connected !\n\n' + data.token)
+          localStorage.setItem('TokenJWT', data.token);
+          window.location.reload();
         } else { // Login is not valid
           this.formData.error = data.error_code;
           this.formData.errortxt = data.message;

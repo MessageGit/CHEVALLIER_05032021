@@ -59,3 +59,13 @@ exports.signup = (req, res, next) => { // Inscription
         }
     }
 }
+
+exports.verify = (req, res, next) => { // Auth verify
+    try {
+        const userToken = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(userToken, 'TOK3N_S3CR3T');
+        res.status(201).send({success: 1, message: 'Authentification vérifiée.'})
+    } catch {
+        res.status(401).send({success: 0, message: 'Un problème d\'authentification est survenu.'})
+    }
+}
