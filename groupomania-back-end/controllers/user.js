@@ -13,7 +13,7 @@ exports.login = (req, res, next) => { // Connexion
             bcrypt.compare(req.body.passwrd, data.password)
             .then(valid => {
                 if(!valid)return res.status(401).send({error_code: 2, message: 'Le mot de passe saisi est incorrect.' });
-                const newToken = jwt.sign({tokenUser: data.username }, 'TOK3N_S3CR3T', { expiresIn: '24h' });
+                const newToken = jwt.sign({tokenOwner: data.id }, 'TOK3N_S3CR3T', { expiresIn: '24h' });
                 res.setHeader('Authorization', 'Bearer ' + newToken);
                 res.status(201).send({error_code: 0, token: newToken, message: 'Connexion établie.'});
             })
@@ -60,12 +60,19 @@ exports.signup = (req, res, next) => { // Inscription
     }
 }
 
-exports.verify = (req, res, next) => { // Auth verify
-    try {
-        const userToken = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(userToken, 'TOK3N_S3CR3T');
-        res.status(201).send({success: 1, message: 'Authentification vérifiée.'})
-    } catch {
-        res.status(401).send({success: 0, message: 'Un problème d\'authentification est survenu.'})
+exports.getUserData = (req, res, next) => { // Get data of user
+    Users.findOne({ where: {id: req.body.tokenOwner} })
+        .then(data => { 
+            if(data) {
+                exportUserData(data.dataValues)
+            } else {
+                throw {};
+            }
+        })
+        .catch(err => { res.status(401).send({success: 0, message: 'Un problème d\'authentification est survenu.'})});
+
+    function exportUserData(user) {
+        delete user.password
+        res.status(201).send({success: 1, data: user, message: 'Authentification vérifiée.'})
     }
 }

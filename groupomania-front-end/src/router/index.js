@@ -7,13 +7,16 @@ const routes = [
     path: '/',
     name: 'Auth',
     component: Auth,
-    meta: { requiresAuth: false }
+    meta: { requireAuth: false }
   },
   {
     path: '/board',
     name: 'Board',
     component: () => import('../views/board.vue'),
-    meta: { requiresAuth: true }
+    meta: { 
+      requireAuth: true,
+      userData: ''
+    }
   }
 ]
 
@@ -25,22 +28,28 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userToken = localStorage.getItem('TokenJWT');
   if(userToken) { // User have token (Auth)
-    fetch(store.host_api + '/auth/verify', {
+    fetch(store.host_api + '/auth/userdata', {
       method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + userToken }
     })
     .then(response => response.json())
-    .then(data => { 
-      if(data.success == 0) { localStorage.setItem('TokenJWT', '') }
-      if(to.matched.some(record => record.meta.requiresAuth)) { // Auth required
-        if(data.success == 0) { next({path: '/'}) }
-      } else {
-        if(data.success == 1 && to.path == '/') { next({path: '/board'}) }
+    .then(data => {
+      if(!data.success) { // Authentication is invalid
+        localStorage.removeItem('TokenJWT') 
+      } else { // Authentication is valid
+        to.meta.userData = data.data;
+        if(to.path == '/') { next({path: '/board'}) }
+      }
+      if(to.matched.some(record => record.meta.requireAuth)) { // Auth required
+        if(!data.success) { next({path: '/'}) }
       }
       next()
     })
-    .catch((error) => { console.log(error) });
+    .catch(() => { 
+      localStorage.removeItem('TokenJWT')
+      window.location.reload()
+    });
   } else { // User don't have token (Auth)
-    if(to.matched.some(record => record.meta.requiresAuth)) {
+    if(to.matched.some(record => record.meta.requireAuth)) {
       next({path: '/'})
     }
     next()
