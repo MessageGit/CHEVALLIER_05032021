@@ -36,22 +36,17 @@ router.beforeEach((to, from, next) => {
       if(!data.success) { // Authentication is invalid
         localStorage.removeItem('TokenJWT') 
       } else { // Authentication is valid
-        to.meta.userData = data.data;
-        if(to.path == '/') { next({path: '/board'}) }
+        if(to.path == '/') { router.push('/board') }
       }
-      if(to.matched.some(record => record.meta.requireAuth)) { // Auth required
-        if(!data.success) { next({path: '/'}) }
+      if(to.meta.requireAuth) { // Auth required
+        if(!data.success) { router.push('/')
+        } else { to.meta.userData = data.data; }
       }
       next()
     })
-    .catch(() => { 
-      localStorage.removeItem('TokenJWT')
-      window.location.reload()
-    });
+    .catch(() => { router.push('/'); next() });
   } else { // User don't have token (Auth)
-    if(to.matched.some(record => record.meta.requireAuth)) {
-      next({path: '/'})
-    }
+    if(to.meta.requireAuth) { router.push('/') }
     next()
   }
 })
