@@ -23,6 +23,9 @@ exports.login = (req, res, next) => { // Connexion
 }
 
 exports.signup = (req, res, next) => { // Inscription
+    const user_exist = 1;
+    const email_exist = 2;
+
     if(!req.body.username || !req.body.email || !req.body.passwrd || req.body.passwrd != req.body.passwrdrpt)return res.status(400).send({message: "La requête soumise est incomplète."});
     
     // Check if email/username is already registered in database
@@ -31,13 +34,10 @@ exports.signup = (req, res, next) => { // Inscription
             if(data.length == 0) { // Data is empty
                 signupExec(0);
             } else { // Another email/user exist
-                let username_exist = false; let email_exist = false;
                 for(let i = 0; i < data.length; i++) {
-                    if(data[i].username == req.body.username) { username_exist = true; }
-                    if(data[i].email == req.body.email) { email_exist = true; }
+                    if(data[i].username == req.body.username)return signupExec(user_exist);
+                    if(data[i].email == req.body.email)return signupExec(email_exist);
                 }
-                if(username_exist) return signupExec(1);
-                if(email_exist) return signupExec(2);
             }
         });
 
@@ -53,9 +53,9 @@ exports.signup = (req, res, next) => { // Inscription
                 .catch(err => { res.status(500).send({error_code: 9, message: "Une erreur est survenue (" + err + ")"}) });
         } else {
             // Username already registered
-            if(conflict == 1) return res.status(401).send({error_code: 1, message: "Ce nom d'utilisateur est déjà utilisé par quelqu'un."});
+            if(conflict == user_exist) return res.status(400).send({error_code: 1, message: "Ce nom d'utilisateur est déjà utilisé par quelqu'un."});
             // Email already registered
-            if(conflict == 2) return res.status(401).send({error_code: 2, message: "Cet email est déjà utilisé par quelqu'un."});
+            if(conflict == email_exist) return res.status(400).send({error_code: 2, message: "Cet email est déjà utilisé par quelqu'un."});
         }
     }
 }
@@ -69,10 +69,10 @@ exports.getUserData = (req, res, next) => { // Get data of user
                 throw {};
             }
         })
-        .catch(err => { res.status(401).send({success: 0, message: 'Un problème d\'authentification est survenu.'})});
+        .catch(err => { res.status(401).send({message: 'Un problème d\'authentification est survenu.'})});
 
     function exportUserData(user) {
         delete user.password
-        res.status(201).send({success: 1, data: user, message: 'Authentification vérifiée.'})
+        res.status(201).send({data: user, message: 'Authentification vérifiée.'})
     }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="auth-page">
+  <div class="auth-page" v-if="!userData">
     <div class="intro-content">
       <h1>Plus de collaborateurs, plus de discussions..</h1>
       <div class="acc-case" @click="authType = 0" :class="{ 'focus-acc' : !authType }">
@@ -36,6 +36,10 @@ export default {
     signupModal,
     loginModal
   },
+  props: ['userData'],
+  beforeCreate() {
+    if(this.userData)return this.$router.push('/board')
+  },
   data() {
     return {
       authType: 1, // Login (default)
@@ -65,7 +69,7 @@ export default {
   position: absolute;
   top: 0px; left: 0px;
   width: 100%; height: 100%;
-  background-color: #00000094;
+  background-color: #000000cc;
 }
 
 .auth-page .intro-content {

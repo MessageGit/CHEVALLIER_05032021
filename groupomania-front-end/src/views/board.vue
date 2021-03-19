@@ -1,14 +1,14 @@
 <template>
-  <div class="board">
+  <div class="board" v-if="userData">
     <div class="header-toolbar">
-      <span>Vous êtes connecté à groupomania en tant que <b>MessageBox</b></span>
+      <span>Vous êtes connecté à groupomania en tant que <b>{{ userData.username }}</b></span>
     </div>
     <div class="board-content">
 
       <!-- Left content -->
       <div class="tool-profil">
         <img src="../assets/icons/user2-icon.png" id="profil-img" alt="Image de profil">
-        <div id="user-name">MessageBox</div>
+        <div id="user-name">{{ userData.username }}</div>
         <ul class="tool-menu">
           <li class="menu-list" @click="menuFocus = 1" :class="{'focus-menu' : menuFocus == 1}">Accueil</li>
           <li class="menu-list" @click="menuFocus = 2" :class="{'focus-menu' : menuFocus == 2}">Paramètres</li>
@@ -36,7 +36,7 @@
       <div class="profil-content" v-else>
         <div class="change-img">
           <form class="upload-img">
-            <input type="file" id="profil-upload" name="profil-img">
+            <input type="file" @change="updateImgProfil" id="profil-upload" name="profil-img">
             <label for="profil-upload"></label>
           </form>
           <div class="change-txt">
@@ -67,6 +67,10 @@ export default {
   components: {
     postForum
   },
+  beforeCreate() {
+    if(!this.userData)return this.$router.push('/')
+  },
+  props: ['userData'],
   data() {
     return {
       menuFocus: 1
@@ -79,6 +83,9 @@ export default {
       setTimeout(() => { 
         window.location.reload(); 
       }, 250);
+    },
+    updateImgProfil(event) {
+      console.log(event.target.files[0]);
     }
   }
 }

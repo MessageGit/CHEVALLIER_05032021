@@ -7,6 +7,6 @@ module.exports = (req, res, next) => {
     if(!myToken.tokenOwner) { throw {}; }
     next();
   } catch {
-    res.status(401).send({success: 0, message: 'Un problème d\'authentification est survenu.'})
+    res.status(401).send({message: 'Un problème d\'authentification est survenu.'})
   }
 };
