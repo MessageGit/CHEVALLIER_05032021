@@ -11,3 +11,5 @@ router.delete('/:id', auth, postCtrl.deletePost);
 router.put('/:id', auth, postCtrl.editPost);
 
 module.exports = router;
+
+// Updated (21/03/2021)

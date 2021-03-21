@@ -117,3 +117,5 @@ export default {
   opacity: 0.7;
 }
 </style>
+
+<!-- Updated (21/03/2021) -->

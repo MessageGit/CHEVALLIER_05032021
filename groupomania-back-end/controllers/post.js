@@ -90,3 +90,5 @@ exports.editPost = (req, res, next) => {
         })
         .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
 }
+
+// Updated (21/03/2021)

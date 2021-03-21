@@ -24,3 +24,5 @@ db.posts = require("./posts.model.js")(sequelize, Sequelize);
 db.sequelize.sync();
 
 module.exports = db;
+
+// Updated (21/03/2021)

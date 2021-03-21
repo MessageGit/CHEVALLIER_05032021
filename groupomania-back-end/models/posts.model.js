@@ -12,3 +12,5 @@ module.exports = (sequelize, Sequelize) => {
     });
     return posts;
 };
+
+// Updated (21/03/2021)

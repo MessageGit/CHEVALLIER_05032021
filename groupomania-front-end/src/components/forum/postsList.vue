@@ -50,3 +50,5 @@ export default {
     margin-bottom: 70px;
 }
 </style>
+
+<!-- Updated (21/03/2021) -->
