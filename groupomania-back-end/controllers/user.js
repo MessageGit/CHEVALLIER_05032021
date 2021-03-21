@@ -1,8 +1,15 @@
 const db = require("../models/index.js");
-const Users = db.users;
+const Users = db.users; // import 'users' table
+const Posts = db.posts; // import 'posts' table
 
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+
+// Stock functions
+function getUserIdFromRequest(req) {
+    return req.headers.authorization.split(' ')[2];
+}
 
 exports.login = (req, res, next) => { // Connexion
     if(!req.body.email || !req.body.passwrd)return res.status(400).send({message: "La requête soumise est incomplète."});
@@ -13,9 +20,9 @@ exports.login = (req, res, next) => { // Connexion
             bcrypt.compare(req.body.passwrd, data.password)
             .then(valid => {
                 if(!valid)return res.status(401).send({error_code: 2, message: 'Le mot de passe saisi est incorrect.' });
-                const newToken = jwt.sign({tokenOwner: data.id }, 'TOK3N_S3CR3T', { expiresIn: '24h' });
+                const newToken = jwt.sign({userId: data.id }, 'TOK3N_S3CR3T', { expiresIn: '24h' });
                 res.setHeader('Authorization', 'Bearer ' + newToken);
-                res.status(201).send({error_code: 0, token: newToken, message: 'Connexion établie.'});
+                res.status(201).send({error_code: 0, token: newToken + ' ' + data.id, message: 'Connexion établie.'});
             })
             .catch(error => res.status(500).send({error_code: 5, message: 'Une erreur est survenue (' + error + ')'}));
         })
@@ -60,8 +67,8 @@ exports.signup = (req, res, next) => { // Inscription
     }
 }
 
-exports.getUserData = (req, res, next) => { // Get data of user
-    Users.findOne({ where: {id: req.body.tokenOwner} })
+exports.getUserData = (req, res, next) => { // Get data of user 
+    Users.findOne({ where: {id: getUserIdFromRequest(req)} })
         .then(data => { 
             if(data) {
                 exportUserData(data.dataValues)
@@ -75,4 +82,46 @@ exports.getUserData = (req, res, next) => { // Get data of user
         delete user.password
         res.status(201).send({data: user, message: 'Authentification vérifiée.'})
     }
+}
+
+exports.setUserData = (req, res, next) => { // Set data of user
+    const newImgLink = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+    Users.findOne({ where: {id: getUserIdFromRequest(req)} })
+        .then(data => {
+            if(data.imgProfil) { // Delete last avatar (in storage)
+                const lastUserImg = data.imgProfil.split('/images/')[1];
+                fs.unlink('images/' + lastUserImg, () => {});
+            }
+            Users.update({imgProfil: newImgLink }, {where: { id: getUserIdFromRequest(req) }})
+                .then(data => { // Set new avatar link
+                    if(data == 1) res.status(201).send({imgLink: newImgLink})
+                    else res.status(409);
+                })
+                .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+        })
+        .catch(err => { res.status(404).send({message: 'Certaines ressources semblent introuvables (' + err + ')'}) });
+}
+
+exports.deleteUser = (req, res, next) => { // Delete account
+    const isDeleted = 1;
+    Posts.destroy({ where: { ownerId: getUserIdFromRequest(req) }, force: true })
+        .then(result => { // Delete all posts of user
+            console.log(result + ' posts a/ont été delete lors de la suppresion d\'un compte.')
+            Users.findOne({ where: {id: getUserIdFromRequest(req)} })
+                .then(data => {
+                    if(data.imgProfil) { // Delete avatar file (in storage)
+                        const lastUserImg = data.imgProfil.split('/images/')[1];
+                        fs.unlink('images/' + lastUserImg, () => {});
+                    }
+                    Users.destroy({ where: { id: getUserIdFromRequest(req) }, force: true })
+                        .then(result => { // Delete accout (final step)
+                            if(result == isDeleted) {
+                                res.status(201).send({message: 'Votre compte a correctement été supprimé.'})
+                            } else { throw 'Votre compte n\'a pas été supprimé.' }
+                        })
+                        .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+                })
+                .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+        })
+        .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
 }

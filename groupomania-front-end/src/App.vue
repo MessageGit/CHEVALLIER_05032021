@@ -1,5 +1,5 @@
 <template>
-  <router-view v-if="!loading" :userData="userData" />
+  <router-view v-if="!loading" :userData="userData" :userToken="userToken" />
   <loading v-else />
 </template>
 
@@ -11,6 +11,7 @@ export default {
   data() {
     return {
       userData: '',
+      userToken: localStorage.getItem('TokenJWT'),
       loading: true
     }
   },
@@ -18,10 +19,9 @@ export default {
     loading
   },
   created() {
-    const userToken = localStorage.getItem('TokenJWT');
-    if(userToken) {
-      fetch(store.host_api + '/auth/userdata', {
-        method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + userToken }
+    if(this.userToken) {
+      fetch(store.host_api + '/auth/user', {
+        method: 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.userToken }
       })
       .then(response => {
         if(response.status == 201) { return response.json()
@@ -38,7 +38,9 @@ export default {
   },
   methods: {
     initUserData(data) {
-      if(data) { this.userData = data.data;
+      if(data) { 
+        this.userData = data.data;
+        if(!this.userData.imgProfil) { this.userData.imgProfil = './default-avatar.png' }
       } else { this.userData = ''; }
       this.loading = false;
     }

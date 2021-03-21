@@ -7,7 +7,7 @@
 
       <!-- Left content -->
       <div class="tool-profil">
-        <img src="../assets/icons/user2-icon.png" id="profil-img" alt="Image de profil">
+        <img :src="displayAvatar" id="profil-img" alt="Image de profil">
         <div id="user-name">{{ userData.username }}</div>
         <ul class="tool-menu">
           <li class="menu-list" @click="menuFocus = 1" :class="{'focus-menu' : menuFocus == 1}">Accueil</li>
@@ -17,63 +17,40 @@
       </div>
 
       <div class="forum-content" v-if="menuFocus != 2">
-        <!-- Insertion content -->
-        <div class="insert-post">
-          <textarea placeholder="Ecrivez quelque chose ici.."></textarea>
-          <div class="join-img">
-            <input type="file" id="post-join-img" name="profil-img">
-            <label for="post-join-img"></label>
-            <span>Ajouter une image</span>
-            <img src="../assets/icons/upload-img-icon.png" alt="Joindre une image à votre post">
-          </div>
-          <div class="submit-button">Envoyer</div>
-        </div>
-
-        <!-- Forum content -->
-        <postForum />
+        <insertForum @newPost="postCreated" :liveAvatar="displayAvatar" :userData="userData" :userToken="userToken" />
+        <postsList :newPost="newPostData" :userData="userData" :userToken="userToken" />
       </div>
 
-      <div class="profil-content" v-else>
-        <div class="change-img">
-          <form class="upload-img">
-            <input type="file" @change="updateImgProfil" id="profil-upload" name="profil-img">
-            <label for="profil-upload"></label>
-          </form>
-          <div class="change-txt">
-            <b>Changez votre photo de profil</b> en renseignant l'URL d'une nouvelle image ou en recherchant directement
-            une image sur votre appareil, celle-ci deviendra visible dans vos nouveaux posts.
-          </div>
-        </div>
-        <div class="delete-account">
-          <span>
-            Conformément aux législations en vigueur, vous avez le droit de supprimer votre profil ainsi
-            que le contenu créé/partagé sur notre plateforme, sachez que vous allez simplement nous manquer :(
-            <br /><br />
-            <b>Que souhaitez-vous faire ?</b>
-            <div class="acc-delete-btn">Supprimer mon compte</div>
-          </span>
-        </div>
-      </div>
+      <userProfile @avatarUpdate="imgProfilUpdated" @forceLogout="logout" :userData="userData" :userToken="userToken" v-else />
 
     </div>
   </div>
 </template>
 
 <script>
-import postForum from '@/components/postForum.vue'
+// User profil
+import userProfile from '@/components/userProfile.vue'
+
+// Forum content
+import insertForum from '@/components/forum/insertForum.vue'
+import postsList from '@/components/forum/postsList.vue'
 
 export default {
   name: 'Board',
   components: {
-    postForum
+    insertForum,
+    postsList,
+    userProfile
   },
   beforeCreate() {
     if(!this.userData)return this.$router.push('/')
   },
-  props: ['userData'],
+  props: ['userData', 'userToken'],
   data() {
     return {
-      menuFocus: 1
+      menuFocus: 1,
+      displayAvatar: this.userData.imgProfil,
+      newPostData: ''
     }
   },
   methods: {
@@ -84,8 +61,9 @@ export default {
         window.location.reload(); 
       }, 250);
     },
-    updateImgProfil(event) {
-      console.log(event.target.files[0]);
+    imgProfilUpdated(newImg) { this.displayAvatar = newImg; },
+    postCreated(data) {
+      this.newPostData = data;
     }
   }
 }
@@ -127,166 +105,6 @@ export default {
   width: 70%; min-height: 900px;
 }
 
-.board .board-content .forum-content .insert-post {
-  position: relative;
-  width: 100%;
-  padding-bottom: 40px;
-}
-
-.board .board-content .forum-content .insert-post textarea {
-  position: relative;
-  min-width: 94%; max-width: 94%; 
-  min-height: 45px; max-height: 110px;
-  border: 2px solid #ececec;
-  border-radius: 10px;
-  outline: 0;
-  padding: 15px 2.5% 0px 2.5%;
-  font-family: Nunito;
-  font-weight: bold;
-}
-
-.board .board-content .forum-content .insert-post .join-img {
-  position: absolute;
-  right: 180px; bottom: 0px;
-  width: 200px; height: 34px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 45px;
-  transition-duration: 0.2s;
-}
-
-.board .board-content .forum-content .insert-post .join-img:hover {
-  opacity: 0.7;
-  background-color: #ececec;
-}
-
-.board .board-content .forum-content .insert-post .join-img #post-join-img {
-  display: none;
-}
-
-.board .board-content .forum-content .insert-post .join-img label {
-  position: absolute;
-  top: 0px; left: 0px;
-  width: 100%; height: 100%;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.board .board-content .forum-content .insert-post .join-img span {
-  position: relative;
-  font-weight: bold;
-  color: #14b76c;
-  font-size: 14px;
-  margin-right: 15px;
-}
-
-.board .board-content .forum-content .insert-post .join-img img {
-  height: 20px;
-  width: 24px;
-}
-
-.board .board-content .forum-content .insert-post .submit-button {
-  position: absolute;
-  right: 0px; bottom: 0px;
-  width: 165px; height: 34px;
-  color: white;
-  background-color: #9577d4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition-duration: 0.2s;
-}
-
-.board .board-content .forum-content .insert-post .submit-button:hover {
-  opacity: 0.7;
-}
-
-.board .board-content .profil-content {
-  position: relative;
-  margin-top: 80px;
-  float: right;
-  width: 70%;
-  min-height: 300px;
-}
-
-.board .board-content .profil-content .change-img {
-  position: relative;
-  margin-top: 25px;
-  width: 100%;
-  text-align: justify;
-}
-
-.board .board-content .profil-content .upload-img {
-  position: relative;
-  width: 30%; height: 90px;
-  margin-right: 5%;
-  display: inline-block;
-}
-
-.board .board-content .profil-content .upload-img #profil-upload { display: none; }
-.board .board-content .profil-content .upload-img label {
-  position: absolute;
-  top: 0px; left: 0px;
-  width: 100%; height: 100%;
-  background: url('../assets/icons/upload-icon.png') no-repeat center;
-  background-size: 36% 60%;
-  cursor: pointer;
-  border: 2px dotted #ececec;
-  border-radius: 5px;
-  transition-duration: 0.2s;
-}
-
-.board .board-content .profil-content .upload-img label:hover {
-  opacity: 0.7;
-  transform: scale(1.1);
-  background-color: #ececec;
-}
-
-.board .board-content .profil-content .change-txt {
-  position: absolute;
-  width: 60%;
-  display: inline-block;
-}
-
-.board .board-content .profil-content .delete-account {
-  position: relative;
-  margin-top: 45px;
-  width: 95%; min-height: 120px;
-  border-radius: 5px;
-  background-color: #ececec;
-  text-align: left;
-  padding: 20px 2.5% 25px 2.5%;
-}
-
-.board .board-content .profil-content .delete-account span {
-  font-size: 15px;
-}
-
-.board .board-content .profil-content .delete-account .acc-delete-btn {
-  position: relative;
-  background-color: #a56363;
-  width: 170px; height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  color: white; font-size: 13px;
-  border-radius: 5px;
-  margin-top: 8px;
-  cursor: pointer;
-  transition-duration: 0.2s;
-}
-
-.board .board-content .profil-content .delete-account .acc-delete-btn:hover {
-  opacity: 0.7;
-  width: 200px;
-}
-
 .board .board-content .tool-profil {
   position: fixed;
   top: 75px;
@@ -297,7 +115,7 @@ export default {
 
 .board .board-content .tool-profil #profil-img {
   width: 110px; height: 110px;
-  border-radius: 45px;
+  border-radius: 90px;
 }
 
 .board .board-content .tool-profil #user-name {
