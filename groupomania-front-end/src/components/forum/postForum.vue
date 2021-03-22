@@ -22,14 +22,20 @@
             {{ postText }}
             <img :src="dataPost.fileImg" class="image-post" v-if="dataPost.fileImg" alt="Image jointe au post">
         </div>
+        <commentsList />
     </div>
 </template>
 
 <script>
+import commentsList from '@/components/forum/commentsList.vue'
+
 import store from '@/modules/store.json'
 
 export default {
     name: 'postForum',
+    components: {
+        commentsList
+    },
     props: ['userData', 'userToken', 'dataPost'],
     data() {
         return {
@@ -192,6 +198,7 @@ export default {
     outline: 0; border: none;
     font-family: Nunito;
     font-weight: bold;
+    resize: none;
 }
 
 .post-content .parag-post .image-post {
