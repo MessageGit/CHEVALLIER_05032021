@@ -11,35 +11,48 @@ function getUserIdFromRequest(req) {
 }
 
 exports.getAllPosts = (req, res, next) => {
-    let dataPosts = [];
-
-    Posts.findAll({ order: [['id', 'DESC']] })
-        .then(data => {
-            for(let i = 0; i < data.length; i++) {
-
-                // Get number of replies for this post
-                let countReplies = 0;
-                Reply.findAll({ where: {postId: data[i].dataValues.id} })
+    let dataPosts = []; let totalPosts = 0;
+    function getAllPosts() { // Step n°1 - Get all posts in database
+        return new Promise(resolve => {
+            Posts.findAll({ order: [['id', 'DESC']] })
+            .then(data => { totalPosts = data.length;
+                for(let i = 0; i < totalPosts; i++) {
+                    dataPosts[i] = data[i].dataValues;
+                    if(i == totalPosts-1)return resolve()
+                }
+            })
+            .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
+        });
+    }
+    function getAllReplies() { // Step n°2 - Get all replies by all posts
+        return new Promise(resolve => {
+            for(let i = 0; i < totalPosts; i++) {
+                Reply.findAll({where: {postId: dataPosts[i].id}})
                 .then(replydata => {
-                    countReplies = replydata.length;
+                    dataPosts[i].nbReplies = replydata.length;
+                    if(i == totalPosts-1)return resolve()
                 })
-
-                // Get user data for this post
-                Users.findOne({ where: {id: data[i].dataValues.ownerId} })
-                .then(userdata => {
-                    if(userdata) {
-                        let userAvatar = userdata.imgProfil;
-                        if(!userAvatar) { userAvatar = './default-avatar.png' }
-                        data[i].dataValues.ownerName = userdata.username;
-                        data[i].dataValues.ownerAvatar = userAvatar;
-                        data[i].dataValues.nbReplies = countReplies;
-                        dataPosts.push(data[i].dataValues)
-                        if(i == data.length-1)return res.status(201).send({postsList: dataPosts});
-                    } else { throw 'L\'utilisateur ID ' + data[i].ownerId + ' lié au post n°' + data[i].id + ' introuvable.'; }
-                });
+                .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
             }
-        })
-        .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
+        });
+    }
+    function getPostsOwners(){ // Step n°3 - Get posts owners informations
+        for(let i = 0; i < totalPosts; i++) {
+            Users.findOne({where: {id: dataPosts[i].ownerId}})
+            .then(userdata => {
+                if(userdata) {
+                    let userAvatar = userdata.imgProfil;
+                    if(!userAvatar) { userAvatar = './default-avatar.png' }
+                    dataPosts[i].ownerAvatar = userAvatar;
+                    dataPosts[i].ownerName = userdata.username;
+                    if(i == totalPosts-1)return res.status(201).send({postsList: dataPosts});
+                } else { throw 'L\'utilisateur ID ' + data[i].ownerId + ' lié au post n°' + data[i].id + ' introuvable.'; }
+            })
+            .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
+        }
+    }
+    // Process execution for get all posts and her informations
+    getAllPosts().then(() => getAllReplies()).then(() => getPostsOwners());
 }
 
 exports.createPost = (req, res, next) => {
