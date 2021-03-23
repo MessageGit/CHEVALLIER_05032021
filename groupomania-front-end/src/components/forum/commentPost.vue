@@ -1,17 +1,19 @@
 <template>
-    <div class="comment-ctn">
+    <div class="comment-ctn" v-if="!isDeleted">
         <img src="@/assets/icons/reply-icon.png" class="reply-icon" alt="Réponse de MessageBox">
         <div class="comment-txt">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed varius metus sit amet nulla sagittis, condimentum semper quam ultricies. Aliquam feugiat vehicula vulputate. Vestibulum fermentum purus dapibus orci mollis, a tincidunt lorem tincidunt. Nunc vitae dolor sed eros vulputate tempor. Integer volutpat blandit pretium.
+            <textarea class="edit-reply" spellcheck="false" v-if="inEdit" v-model="editReply"></textarea>
+            {{ replyTxt }}
         </div>
         <div class="comment-infos">
-            Le <b>22/03/2021</b> à <b>09h55</b> par <b>MessageBox</b>
+            Le <b>{{ replyDate }}</b> à <b>{{ replyTime }}</b> par <b>{{ dataReply.ownerName }}</b>
         </div>
-        <div class="comment-manage">
-            <div class="manage-icon">
+        <div class="comment-manage" v-if="dataReply.ownerId == userData.id || userData.isAdmin">
+            <div class="manage-icon" @click="replyEdition()">
                 <img src="@/assets/icons/edit-icon.png" alt="Editer cette réponse">
+                <span v-if="inEdit">Valider</span>
             </div>
-            <div class="manage-icon">
+            <div class="manage-icon" @click="replyDelete()" v-if="!inEdit">
                 <img src="@/assets/icons/delete-icon.png" alt="Supprimer cette réponse">
             </div>
         </div>
@@ -19,8 +21,56 @@
 </template>
 
 <script>
+import funcs from '@/modules/functions.js'
+
+import store from '@/modules/store.json'
+
 export default {
-    
+    el: 'commentPost',
+    props: ['userData', 'userToken', 'dataReply'],
+    data() {
+        return {
+            replyTxt: this.dataReply.txt,
+            replyDate: funcs.newDateFormat(this.dataReply.createdAt),
+            replyTime: funcs.newTimeFormat(this.dataReply.createdAt),
+            editReply: this.dataReply.txt, inEdit: false,
+            isDeleted: false
+        }
+    },
+    methods: {
+        replyEdition() {
+            if(!this.inEdit) { this.inEdit = true;
+            } else { this.inEdit = false;
+                fetch(store.host_api + '/reply/' + this.dataReply.id, { 
+                    method: 'PUT', 
+                    headers: { 'Content-type' : 'application/json', 'Authorization' : 'Bearer ' + this.userToken },
+                    body: JSON.stringify({txt: this.editReply})
+                })
+                .then(response => {
+                    if(response.status == 201) { return response.json()
+                    } else { throw 'Ce commentaire n\'a pas pu être modifié.' }
+                })
+                .then(data => { 
+                    this.replyTxt = this.editReply;
+                    console.log(data.message) 
+                })
+                .catch((err) => { console.log(err) });
+            }
+        },
+        replyDelete() {
+            fetch(store.host_api + '/reply/' + this.dataReply.id, { method: 'DELETE', headers: { 'Content-type' : 'application/json', 'Authorization' : 'Bearer ' + this.userToken } })
+                .then(response => {
+                    if(response.status == 201) { return response.json()
+                    } else { throw 'Ce commentaire n\'a pas pu être supprimé.' }
+                })
+                .then(data => { 
+                    this.isDeleted = true; 
+                    this.$emit('replyDeleted')
+                    console.log(data.message)
+                })
+                .catch((err) => { console.log(err) });
+        }
+    }
 }
 </script>
 
@@ -29,7 +79,9 @@ export default {
     position: relative;
     width: 100%; min-height: 45px;
     margin-bottom: 25px;
-    padding-bottom: 45px;
+    padding: 25px 0px 55px 0px;
+    background-color: #f7f7f7;
+    border-radius: 3px;
 }
 
 .comment-ctn .reply-icon {
@@ -43,15 +95,24 @@ export default {
     position: relative;
     top: 34px;
     left: 17.5%;
-    width: 80%;
+    width: 75%;
     font-size: 13px;
     text-align: justify;
+    white-space: pre-line;
+}
+
+.comment-ctn .comment-txt .edit-reply {
+    position: absolute;
+    top: 0px; left: 0px;
+    width: 100%; height: 100%;
+    resize: none;
+    outline: 0; border: none;
 }
 
 .comment-ctn .comment-infos {
     position: absolute;
-    left: 17.5%; top: 0px;
-    background-color: #9577d4;
+    left: 17.5%; top: 20px;
+    background-color: #735f9a;
     color: white;
     padding: 4px 10px 4px 10px;
     border-radius: 3px;
@@ -60,12 +121,12 @@ export default {
 
 .comment-ctn .comment-manage {
     position: absolute;
-    top: 0px; right: 0px;
+    top: 18px; right: 35px;
 }
 
 .comment-ctn .comment-manage .manage-icon {
     position: relative;
-    width: 30px; height: 30px;
+    padding: 6px 10px 6px 10px;
     float: right;
     margin-right: 5px;
     display: flex;
@@ -80,8 +141,15 @@ export default {
     background-color: #ececec;
 }
 
+.comment-ctn .comment-manage .manage-icon span {
+    position: relative;
+    top: 2px;
+    margin-left: 10px;
+    font-size: 13px;
+}
+
 .comment-ctn .comment-manage .manage-icon img {
-    width: 60%;
-    height: 60%;
+    width: 20px;
+    height: 20px;
 }
 </style>
