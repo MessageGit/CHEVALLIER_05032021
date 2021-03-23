@@ -1,6 +1,7 @@
 const db = require("../models/index.js");
 const Posts = db.posts; // import 'posts' table
 const Users = db.users; // import 'users' table
+const Reply = db.reply; // import 'reply' table
 
 const fs = require('fs');
 
@@ -15,6 +16,15 @@ exports.getAllPosts = (req, res, next) => {
     Posts.findAll({ order: [['id', 'DESC']] })
         .then(data => {
             for(let i = 0; i < data.length; i++) {
+
+                // Get number of replies for this post
+                let countReplies = 0;
+                Reply.findAll({ where: {postId: data[i].dataValues.id} })
+                .then(replydata => {
+                    countReplies = replydata.length;
+                })
+
+                // Get user data for this post
                 Users.findOne({ where: {id: data[i].dataValues.ownerId} })
                 .then(userdata => {
                     if(userdata) {
@@ -22,6 +32,7 @@ exports.getAllPosts = (req, res, next) => {
                         if(!userAvatar) { userAvatar = './default-avatar.png' }
                         data[i].dataValues.ownerName = userdata.username;
                         data[i].dataValues.ownerAvatar = userAvatar;
+                        data[i].dataValues.nbReplies = countReplies;
                         dataPosts.push(data[i].dataValues)
                         if(i == data.length-1)return res.status(201).send({postsList: dataPosts});
                     } else { throw 'L\'utilisateur ID ' + data[i].ownerId + ' lié au post n°' + data[i].id + ' introuvable.'; }
@@ -54,6 +65,7 @@ exports.deletePost = (req, res, next) => {
                         Posts.destroy({ where: { id: postId }, force: true })
                             .then(result => { // Destroy this post
                                 if(result == isDeleted) {
+                                    Reply.destroy({where: {postId: postData.id}, force: true}) // Delete attached replies
                                     if(postData.fileImg) { // Delete attached img (in storage)
                                         const postImg = postData.fileImg.split('/images/')[1];
                                         fs.unlink('images/' + postImg, () => {});
@@ -90,5 +102,3 @@ exports.editPost = (req, res, next) => {
         })
         .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
 }
-
-// Updated (21/03/2021)
