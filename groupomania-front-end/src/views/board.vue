@@ -78,7 +78,7 @@ export default {
   position: fixed;
   top: 0px;
   width: 100%; height: 38px;
-  background-color: #9577d4;
+  background-color: #4b415f;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -153,5 +153,3 @@ export default {
   color: white;
 }
 </style>
-
-<!-- Updated (21/03/2021) -->

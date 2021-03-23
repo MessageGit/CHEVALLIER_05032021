@@ -5,9 +5,9 @@
         </div>
         <div class="post-infos">
             <span class="post-owner">Posté le <b>{{ postDate }}</b> à <b>{{ postTime }}</b><br />par <b>{{ dataPost.ownerName }}</b></span>
-            <div class="post-manage comments-nb" v-if="!inEdit">
+            <div class="post-manage comments-nb" @click="manageReplies(0)" v-if="!inEdit">
                 <img src="@/assets/icons/comments-icon.png" alt="Commentaires liés à ce post">
-                <span>0</span>
+                <span>{{ nbReplies }}</span>
             </div>
             <div class="post-manage" @click="editPost()" v-if="userData.isAdmin || dataPost.ownerId == userData.id">
                 <img src="@/assets/icons/edit-icon.png" alt="Editer ce post">
@@ -22,13 +22,14 @@
             {{ postText }}
             <img :src="dataPost.fileImg" class="image-post" v-if="dataPost.fileImg" alt="Image jointe au post">
         </div>
-        <commentsList />
+        <commentsList :targetPost="dataPost" @repliesState="manageReplies" :showReplies="showReplies" :userData="userData" :userToken="userToken" />
     </div>
 </template>
 
 <script>
 import commentsList from '@/components/forum/commentsList.vue'
 
+import funcs from '@/modules/functions.js'
 import store from '@/modules/store.json'
 
 export default {
@@ -39,23 +40,23 @@ export default {
     props: ['userData', 'userToken', 'dataPost'],
     data() {
         return {
-            postDate: this.newDateFormat(),
-            postTime: this.newTimeFormat(1), // Fuseaux horaire (UTC+1)
+            postDate: funcs.newDateFormat(this.dataPost.createdAt),
+            postTime: funcs.newTimeFormat(this.dataPost.createdAt),
             postText: this.dataPost.txt,
             editText: this.dataPost.txt, inEdit: false,
             isDeleted: false,
+            nbReplies: this.dataPost.nbReplies, showReplies: false,
         }
     },
     methods: {
-        newDateFormat() {
-            let newDate = this.dataPost.createdAt.split('T')[0];
-            newDate = newDate.split('-')[2] + '/' + newDate.split('-')[1] + '/' + newDate.split('-')[0];
-            return newDate;
-        },
-        newTimeFormat(timeZone) {
-            let newTime = parseInt(this.dataPost.createdAt.substring(11, 13))+timeZone;
-            newTime = newTime + this.dataPost.createdAt.substring(13, 16).replace(':', 'h');
-            return newTime;
+        manageReplies: function(update, newRepliesNb) {
+            if(update) { this.nbReplies = newRepliesNb; 
+            } else {
+                if(this.nbReplies) {
+                    if(!this.showReplies) { this.showReplies = true;
+                    } else { this.showReplies = false; }
+                }
+            }
         },
         editPost() {
             if(this.inEdit) { 
@@ -187,7 +188,7 @@ export default {
     margin-top: 90px;
     left: 5%; width: 90%;
     padding-bottom: 25px;
-    text-align: left;
+    text-align: justify;
     white-space: pre-line;
 }
 
@@ -214,5 +215,3 @@ export default {
     opacity: 1;
 }
 </style>
-
-<!-- Updated (21/03/2021) -->

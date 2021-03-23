@@ -29,6 +29,7 @@ export default {
                 postTxt.value = ''; postImg.value = '';
                 data.data.ownerName = this.userData.username;
                 data.data.ownerAvatar = this.liveAvatar;
+                data.data.nbReplies = 0;
                 this.$emit('newPost', data.data);
             })
             .catch((err) => { console.log(err) });
@@ -117,5 +118,3 @@ export default {
   opacity: 0.7;
 }
 </style>
-
-<!-- Updated (21/03/2021) -->
