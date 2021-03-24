@@ -69,7 +69,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/style/_media.scss';
+
 .board {
   width: 100%;
 }
@@ -82,7 +84,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 2px 3px 5px 0px rgb(0 0 0 / 17%);
+  box-shadow: 2px 3px 5px 0px rgb(0, 0, 0 / 17%);
   -webkit-box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.17);
   -moz-box-shadow: 2px 3px 5px 0px rgba(0, 0, 0, 0.17);
   z-index: 9;
@@ -97,12 +99,19 @@ export default {
   position: relative;
   margin: 0 auto;
   width: 1000px;
+  @include smalllaptop {
+    width: 100%;
+  }
 }
 
 .board .board-content .forum-content {
   position: relative;
   float: right; margin-top: 80px;
   width: 70%; min-height: 900px;
+  @include smalllaptop {
+    width: 90%;
+    right: 5%;
+  }
 }
 
 .board .board-content .tool-profil {
@@ -111,16 +120,44 @@ export default {
   float: left;
   width: 215px;
   height: 300px;
+  @include smalllaptop {
+    position: relative;
+    margin: 0 auto;
+    float: inherit;
+    width: 85%; height: 170px;
+  }
+  @include ultrasmall {
+    height: 300px;
+  }
 }
 
 .board .board-content .tool-profil #profil-img {
   width: 110px; height: 110px;
   border-radius: 90px;
+  @include smalllaptop {
+    float: left;
+    margin-top: 10px; margin-left: 12%;
+    width: 90px; height: 90px;
+  }
+  @include ultrasmall {
+    float: inherit;
+    margin-top: inherit; margin-left: inherit;
+  }
 }
 
 .board .board-content .tool-profil #user-name {
   margin-top: 15px;
   width: 100%;
+  @include smalllaptop {
+    position: absolute;
+    bottom: 35px; left: 12%;
+    width: 0px;
+  }
+  @include ultrasmall {
+    position: relative;
+    bottom: inherit; left: inherit;
+    width: 100%;
+  }
 }
 
 .board .board-content .tool-profil .tool-menu {
@@ -128,6 +165,16 @@ export default {
   margin-top: 25px;
   width: 100%;
   padding: 0;
+  @include smalllaptop {
+    float: left;
+    width: 50%;
+    margin-left: 10%; margin-top: 8px;
+  }
+  @include ultrasmall {
+    float: inherit;
+    width: 90%;
+    margin-top: 25px; margin-left: 5%;
+  }
 }
 
 .board .board-content .tool-profil .tool-menu .menu-list {

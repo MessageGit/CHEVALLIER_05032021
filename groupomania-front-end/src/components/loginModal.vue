@@ -10,6 +10,10 @@
       <label for="login-passwrd" :class="{ 'focus-label' : formData.passwrd }">Mot de passe</label>
     </div>
     <button class="submit-button">Connexion</button>
+    <div class="mobile-switch">
+      Vous n'avez pas de compte ?
+      <span @click="$emit('switchMode')">Inscrivez-vous.</span>
+    </div>
   </form>
 </template>
 

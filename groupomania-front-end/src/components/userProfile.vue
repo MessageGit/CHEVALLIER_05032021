@@ -58,13 +58,21 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/style/_media.scss';
+
 .board .board-content .profil-content {
   position: relative;
   margin-top: 80px;
   float: right;
   width: 70%;
   min-height: 300px;
+  @include smalllaptop {
+    margin: 80px auto 80px auto;
+    float: inherit;
+    width: 80%;
+  }
+  @include mobile { width: 90%; }
 }
 
 .board .board-content .profil-content .change-img {
@@ -92,6 +100,9 @@ export default {
   border: 2px dotted #ececec;
   border-radius: 5px;
   transition-duration: 0.2s;
+  @include mobile {
+    background-size: 56% 70%;
+  }
 }
 
 .board .board-content .profil-content .upload-img label:hover {
@@ -104,6 +115,9 @@ export default {
   position: absolute;
   width: 60%;
   display: inline-block;
+  @include tablet {
+    font-size: 14px;
+  }
 }
 
 .board .board-content .profil-content .delete-account {

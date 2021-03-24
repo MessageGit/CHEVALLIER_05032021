@@ -74,7 +74,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/style/_media.scss';
+
 .comment-ctn {
     position: relative;
     width: 100%; min-height: 45px;
@@ -82,13 +84,20 @@ export default {
     padding: 25px 0px 55px 0px;
     background-color: #f7f7f7;
     border-radius: 3px;
+    @include ultrasmall {
+        padding-bottom: 70px;
+    }
 }
 
 .comment-ctn .reply-icon {
     position: absolute;
-    left: 45px;
+    left: 5%;
     width: 35px;
     opacity: 0.4;
+    @include ultrasmall {
+        left: 14px; top: 20px;
+        width: 20px;
+    }
 }
 
 .comment-ctn .comment-txt {
@@ -99,6 +108,9 @@ export default {
     font-size: 13px;
     text-align: justify;
     white-space: pre-line;
+    @include ultrasmall {
+        top: 62px;
+    }
 }
 
 .comment-ctn .comment-txt .edit-reply {
@@ -122,6 +134,9 @@ export default {
 .comment-ctn .comment-manage {
     position: absolute;
     top: 18px; right: 35px;
+    @include ultrasmall {
+        top: 52px; right: 10px;
+    }
 }
 
 .comment-ctn .comment-manage .manage-icon {
@@ -135,6 +150,13 @@ export default {
     transition-duration: 0.2s;
     cursor: pointer;
     border-radius: 45px;
+    @include ultrasmall {
+        margin-right: 2px;
+    }
+    @include mobile {
+        margin-right: 2px;
+        padding: 6px;
+    }
 }
 
 .comment-ctn .comment-manage .manage-icon:hover {
@@ -149,7 +171,12 @@ export default {
 }
 
 .comment-ctn .comment-manage .manage-icon img {
-    width: 20px;
-    height: 20px;
+    width: 20px; height: 20px;
+    @include ultrasmall {
+        width: 15px; height: 15px;
+    }
+    @include mobile {
+        width: 15px; height: 15px;
+    }
 }
 </style>

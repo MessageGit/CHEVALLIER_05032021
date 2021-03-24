@@ -38,11 +38,21 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/style/_media.scss';
+
 .board .board-content .forum-content .insert-post {
   position: relative;
   width: 100%;
   padding-bottom: 40px;
+  @include smalllaptop {
+    margin: 0 auto;
+    width: 70%;
+    margin-bottom: 100px;
+  }
+  @include mobile {
+    width: 80%;
+  }
 }
 
 .board .board-content .forum-content .insert-post textarea {
@@ -66,6 +76,9 @@ export default {
   align-items: center;
   border-radius: 45px;
   transition-duration: 0.2s;
+  @include ultrasmall {
+    width: 75px;
+  }
 }
 
 .board .board-content .forum-content .insert-post .join-img:hover {
@@ -91,6 +104,9 @@ export default {
   color: #14b76c;
   font-size: 14px;
   margin-right: 15px;
+  @include ultrasmall {
+    display: none;
+  }
 }
 
 .board .board-content .forum-content .insert-post .join-img img {

@@ -15,8 +15,8 @@
     </div>
     <div class="auth-content">
       <img alt="Groupomania logo" id="website-icon" src="../assets/icons/web-icon-black.png">
-      <signupModal @isValid="sessionAlias" v-if="!authType" />
-      <loginModal :alias="aliasLogin" v-else />
+      <signupModal @isValid="sessionAlias" @switchMode="authType = 1" v-if="!authType" />
+      <loginModal :alias="aliasLogin" @switchMode="authType = 0" v-else />
       <div class="social-link">
         <img src="../assets/icons/social/facebook-icon.png" alt="Facebook">
         <img src="../assets/icons/social/twitter-icon.png" alt="Twitter">
@@ -55,7 +55,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/style/_media.scss';
+
 .auth-page {
   position: fixed;
   top: 0px; left: 0px;
@@ -108,6 +110,9 @@ export default {
   cursor: pointer;
   display: flex;
   transition-duration: 0.2s;
+  @include custom(1160) {
+    margin-bottom: 15px;
+  }
 }
 
 .focus-acc { background-color: #ffffff4c!important; }
@@ -141,6 +146,9 @@ export default {
   bottom: 0px; right: 90px;
   width: 250px; height: 230px;
   opacity: 0.8;
+  @include custom(1160) {
+    display: none;
+  }
 }
 
 .auth-content {
@@ -153,6 +161,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  @include smalllaptop {
+    width: 100%;
+  }
 }
 
 .auth-content #website-icon {
@@ -164,6 +175,9 @@ export default {
 .auth-content .auth-form {
   position: relative;
   width: 80%;
+  @include smalllaptop {
+    width: 410px;
+  }
 }
 
 .auth-content .social-link {

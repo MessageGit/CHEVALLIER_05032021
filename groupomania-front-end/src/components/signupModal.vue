@@ -18,6 +18,10 @@
       <label for="sign-passwrdrpt" :class="{ 'focus-label' : formData.passwrdrpt }">Mot de passe (répêtez-le)</label>
     </div>
     <button class="submit-button">Inscription</button>
+    <div class="mobile-switch">
+      Vous avez déjà un compte ?
+      <span @click="$emit('switchMode')">Connectez-vous.</span>
+    </div>
   </form>
 </template>
 
@@ -68,6 +72,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '@/assets/style/_media.scss';
+
 .auth-content .auth-form .auth-error {
   position: relative;
   margin: 0 auto;
@@ -171,5 +177,20 @@ export default {
 .auth-content .auth-form .submit-button:hover {
   background-color: #585879;
   opacity: 0.8;
+}
+
+.auth-content .auth-form .mobile-switch {
+  position: relative;
+  top: 15px; right: 35px;
+  text-align: right;
+  display: none;
+  @include smalllaptop {
+    display: block;
+  }
+}
+
+.auth-content .auth-form .mobile-switch span {
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>

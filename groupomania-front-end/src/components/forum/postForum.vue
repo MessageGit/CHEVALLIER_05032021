@@ -88,7 +88,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/style/_media.scss';
+
 .post-content {
     position: relative;
     margin-top: 65px;
@@ -108,6 +110,7 @@ export default {
     border-left: 30px solid white;
     border-right: 30px solid white;
     z-index: 1;
+    @include ultrasmall { left: -5px; }
 }
 
 .post-content .post-profil-img img {
@@ -129,6 +132,10 @@ export default {
     height: 55px;
     text-align: left;
     align-items: center;
+    @include mobile {
+        width: 195px; height: 90px;
+        text-align: right;
+    }
 }
 
 .post-content .post-infos .post-owner {
@@ -136,6 +143,15 @@ export default {
     font-size: 14px;
     float: left;
     top: 10px;
+    @include tablet {
+        left: 46px;
+    }
+    @include mobile {
+        float: right;
+        top: 12px; 
+        left: inherit; right: 12px;
+        font-size: 13px;
+    }
 }
 
 .post-content .post-infos .post-manage {
@@ -146,12 +162,16 @@ export default {
     display: flex;
     align-items: center;
     cursor: pointer;
+    @include mobile {
+        top: 15px;
+    }
 }
 
 .post-content .post-infos .comments-nb {
     width: 70px;
     padding-left: 0px;
     top: 12px;
+    @include mobile { top: 17px; }
 }
 
 .post-content .post-infos .comments-nb span {
@@ -171,6 +191,9 @@ export default {
     margin-left: 10px;
     margin-right: 10px;
     width: 20px;
+    @include mobile {
+        width: 15px;
+    }
 }
 
 .post-content .post-infos .post-manage span {
@@ -190,6 +213,9 @@ export default {
     padding-bottom: 25px;
     text-align: justify;
     white-space: pre-line;
+    @include mobile {
+        margin-top: 110px;
+    }
 }
 
 .post-content .parag-post .textarea-edit {
