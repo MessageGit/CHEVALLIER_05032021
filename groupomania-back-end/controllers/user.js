@@ -104,43 +104,40 @@ exports.setUserData = (req, res, next) => { // Set data of user
 }
 
 exports.deleteUser = (req, res, next) => { // Delete account
-    const isDeleted = 1;
-    Users.findOne({where: {id: getUserIdFromRequest(req)}})
-        .then(data => {
-            if(data.imgProfil) { // Delete avatar file (in storage)
-                const lastUserImg = data.imgProfil.split('/images/')[1];
+    const isDeleted = 1; let postCheck = 0;
+    function deleteRepliesAndImg(i) { // Step n°1 - Delete all replies/images from user posts
+        Posts.findAll({where: {ownerId: getUserIdFromRequest(req)}})
+        .then(postData => {
+            Reply.destroy({where: {postId: postData[i].dataValues.id}, force: true}) 
+            if(postData[i].dataValues.fileImg) {
+                const postImg = postData[i].dataValues.fileImg.split('/images/')[1];
+                fs.unlink('images/' + postImg, () => {});
+            }
+            if(i == postData.length-1)return deleteUserRessources();
+            else return deleteRepliesAndImg(postCheck++);
+        });
+    }
+    function deleteUserRessources() { // Step n°2 - Delete all posts/replies from user (+ delete profil img)
+        Posts.destroy({where: {ownerId: getUserIdFromRequest(req)}, force: true})
+        Reply.destroy({where: {ownerId: getUserIdFromRequest(req)}, force: true})
+        Users.findOne({where: {id: getUserIdFromRequest(req)}})
+        .then(userdata => {
+            if(userdata.imgProfil) {
+                const lastUserImg = userdata.imgProfil.split('/images/')[1];
                 fs.unlink('images/' + lastUserImg, () => {});
             }
-            function deleteRepliesAndImg() {
-                return new Promise(resolve => {
-                    Posts.findAll({where: {ownerId: getUserIdFromRequest(req)}})
-                    .then(postData => { // Delete all replies & images from user posts
-                        for(let i = 0; i < postData.length; i++) {
-                            Reply.destroy({where: {postId: postData[i].dataValues.id}, force: true}) 
-                            if(postData[i].dataValues.fileImg) {
-                                const postImg = postData[i].dataValues.fileImg.split('/images/')[1];
-                                fs.unlink('images/' + postImg, () => {});
-                                if(i == postData.length-1) { resolve(true) }
-                            }
-                        }
-                    });
-                });
-            }
-            async function deleteRessources() {
-                var isResolve = await deleteRepliesAndImg();
-                if(isResolve == true) { // Delete all posts and all replies from user
-                    Posts.destroy({where: {ownerId: getUserIdFromRequest(req)}, force: true})
-                    Reply.destroy({where: {ownerId: getUserIdFromRequest(req)}, force: true})
-                }
-            }
-            deleteRessources();
-            Users.destroy({where: { id: getUserIdFromRequest(req) }, force: true})
-                .then(result => { // Delete accout (final step)
-                    if(result == isDeleted) {
-                        res.status(201).send({message: 'Votre compte a correctement été supprimé.'})
-                    } else { throw 'Votre compte n\'a pas été supprimé.' }
-                })
-                .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+            deleteUserAccount();
         })
         .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+    }
+    function deleteUserAccount() { // Step n°3 - Delete user account
+        Users.destroy({where: {id: getUserIdFromRequest(req)}, force: true})
+        .then(result => {
+            if(result == isDeleted) {
+                res.status(201).send({message: 'Votre compte a correctement été supprimé.'})
+            } else { throw 'Votre compte n\'a pas été supprimé.' }
+        })
+        .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+    }
+    deleteRepliesAndImg(postCheck); // Process execution
 }

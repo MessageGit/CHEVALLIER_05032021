@@ -8,22 +8,26 @@ function getUserIdFromRequest(req) {
 }
 
 exports.getAllReplies = (req, res, next) => {
-    let dataReplies = [];
-
-    Reply.findAll({where: {postId: req.params.id} })
+    let dataReplies = []; let replyCheck = 0;
+    function getAllReplies() { // Step n°1 - Get all replies for this post
+        Reply.findAll({where: {postId: req.params.id}})
         .then(data => {
-            for(let i = 0; i < data.length; i++) {
-                Users.findOne({ where: {id: data[i].dataValues.ownerId} })
-                .then(userdata => {
-                    if(userdata) {
-                        data[i].dataValues.ownerName = userdata.username;
-                        dataReplies.push(data[i].dataValues)
-                        if(i == data.length-1)return res.status(201).send({repliesList: dataReplies});
-                    } else { throw 'L\'utilisateur ID ' + data[i].ownerId + ' lié à la réponse n°' + data[i].id + ' est introuvable.'; }
-                });
-            }
+            for(let i = 0; i < data.length; i++) { dataReplies[i] = data[i].dataValues; }
+            getOwnerInfos(replyCheck);
         })
         .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
+    }
+    function getOwnerInfos(i) { // Step n°2 - Get replies owners informations
+        Users.findOne({where: {id: dataReplies[i].ownerId}})
+        .then(userdata => {
+            if(userdata) {
+                dataReplies[i].ownerName = userdata.username;
+                if(i == dataReplies.length-1)return res.status(201).send({repliesList: dataReplies});
+                else return getOwnerInfos(replyCheck++);
+            } else { throw 'L\'utilisateur ID ' + data[i].ownerId + ' lié à la réponse n°' + data[i].id + ' est introuvable.'; }
+        });
+    }
+    getAllReplies(); // Process execution
 }
 
 exports.createReply = (req, res, next) => {
