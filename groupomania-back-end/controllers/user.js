@@ -96,11 +96,11 @@ exports.setUserData = (req, res, next) => { // Set data of user
             Users.update({imgProfil: newImgLink }, {where: { id: getUserIdFromRequest(req) }})
                 .then(data => { // Set new avatar link
                     if(data == 1) res.status(201).send({imgLink: newImgLink})
-                    else res.status(409);
+                    else res.status(500);
                 })
-                .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+                .catch(err => { res.status(500).send({message: 'Une erreur est survenue (' + err + ')'}) });
         })
-        .catch(err => { res.status(404).send({message: 'Certaines ressources semblent introuvables (' + err + ')'}) });
+        .catch(err => { res.status(500).send({message: 'Une erreur est survenue (' + err + ')'}) });
 }
 
 exports.deleteUser = (req, res, next) => { // Delete account
@@ -128,16 +128,16 @@ exports.deleteUser = (req, res, next) => { // Delete account
             }
             deleteUserAccount();
         })
-        .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+        .catch(err => { res.status(500).send({message: 'Une erreur est survenue (' + err + ')'}) });
     }
     function deleteUserAccount() { // Step n°3 - Delete user account
         Users.destroy({where: {id: getUserIdFromRequest(req)}, force: true})
         .then(result => {
             if(result == isDeleted) {
-                res.status(201).send({message: 'Votre compte a correctement été supprimé.'})
+                res.status(204).send()
             } else { throw 'Votre compte n\'a pas été supprimé.' }
         })
-        .catch(err => { res.status(409).send({message: 'Une erreur est survenue (' + err + ')'}) });
+        .catch(err => { res.status(500).send({message: 'Une erreur est survenue (' + err + ')'}) });
     }
     deleteRepliesAndImg(postCheck); // Process execution
 }

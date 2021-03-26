@@ -49,7 +49,7 @@ export default {
                 method: 'DELETE', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.userToken }
             })
             .then(response => {
-                if(response.status == 201) { this.$emit('forceLogout');
+                if(response.status == 204) { this.$emit('forceLogout');
                 } else { throw 'La suppression de votre compte a échoué.' }
             })
             .catch((err) => { console.log(err) });

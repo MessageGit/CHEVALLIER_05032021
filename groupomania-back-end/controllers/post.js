@@ -60,13 +60,12 @@ exports.createPost = (req, res, next) => {
 }
 
 exports.deletePost = (req, res, next) => {
-    const postId = req.params.id; const isDeleted = 1; let isAdmin = false;
+    const postId = req.params.id; const isDeleted = 1;
     Posts.findOne({ where: {id: postId} })
         .then(postData => {
             Users.findOne({ where: {id: getUserIdFromRequest(req)} })
                 .then(userData => { // Check user permissions
-                    if(userData.isAdmin == 1) { isAdmin = true; } else { isAdmin = false; }
-                    if(isAdmin || postData.ownerId == userData.id) { // User is admin or owner of this post
+                    if(userData.isAdmin || postData.ownerId == userData.id) { // User is admin or owner of this post
                         Posts.destroy({ where: { id: postId }, force: true })
                             .then(result => { // Destroy this post
                                 if(result == isDeleted) {
@@ -75,7 +74,7 @@ exports.deletePost = (req, res, next) => {
                                         const postImg = postData.fileImg.split('/images/')[1];
                                         fs.unlink('images/' + postImg, () => {});
                                     }
-                                    res.status(201).send({message : 'Ce post a correctement été supprimé.'});
+                                    res.status(204).send();
                                 } else { throw 'Ce post n\'a pas pu être correctement supprimé.' }
                             })
                             .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
@@ -87,17 +86,16 @@ exports.deletePost = (req, res, next) => {
 }
 
 exports.editPost = (req, res, next) => {
-    const postId = req.params.id; const isUpdated = 1; let isAdmin = false;
+    const postId = req.params.id; const isUpdated = 1;
     Posts.findOne({ where: {id: postId} })
         .then(postData => {
             Users.findOne({ where: {id: getUserIdFromRequest(req)} })
                 .then(userData => { // Check user permissions
-                    if(userData.isAdmin == 1) { isAdmin = true; } else { isAdmin = false; }
-                    if(isAdmin || postData.ownerId == userData.id) { // User is admin or owner of this post
+                    if(userData.isAdmin || postData.ownerId == userData.id) { // User is admin or owner of this post
                         Posts.update({txt: req.body.txt}, { where: { id: postId } })
                             .then(result => { // Update this post
                                 if(result == isUpdated) {
-                                    res.status(201).send({message : 'Ce post a correctement été modifié.'});
+                                    res.status(204).send();
                                 } else { throw 'Ce post n\'a pas été correctement modifié.' }
                             })
                             .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });

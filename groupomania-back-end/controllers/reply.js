@@ -50,9 +50,8 @@ exports.editReply = (req, res, next) => {
                     if(isAdmin || replyData.ownerId == userData.id) { // User is admin or owner of this reply
                         Reply.update({txt: req.body.txt}, { where: { id: replyId } })
                             .then(result => { // Update this reply
-                                if(result == isUpdated) {
-                                    res.status(201).send({message : 'Ce commentaire a correctement été modifié.'});
-                                } else { throw 'Ce commentaire n\'a pas été correctement modifié.' }
+                                if(result == isUpdated) { res.status(204).send(); }
+                                else { throw 'Ce commentaire n\'a pas été correctement modifié.' }
                             })
                             .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
                     } else return res.status(403).send({message: "Vous n'avez pas la permission pour modifier ce commentaire."})
@@ -72,9 +71,8 @@ exports.deleteReply = (req, res, next) => {
                     if(isAdmin || replyData.ownerId == userData.id) { // User is admin or owner of this reply
                         Reply.destroy({ where: { id: replyId }, force: true })
                             .then(result => { // Destroy this reply
-                                if(result == isDeleted) {
-                                    res.status(201).send({message : 'Ce commentaire a correctement été supprimé.'});
-                                } else { throw 'Ce commentaire n\'a pas pu être correctement supprimé.' }
+                                if(result == isDeleted) { res.status(204).send(); }
+                                else { throw 'Ce commentaire n\'a pas pu être correctement supprimé.' }
                             })
                             .catch(err => { res.status(500).send({message: "Une erreur est survenue (" + err + ")"}) });
                     } else return res.status(403).send({message: "Vous n'avez pas la permission pour supprimer ce commentaire."})

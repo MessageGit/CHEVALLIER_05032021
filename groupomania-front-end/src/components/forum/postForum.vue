@@ -68,21 +68,17 @@ export default {
                         body: JSON.stringify(data)
                     })
                     .then(response => {
-                        if(response.status == 201) { return response.json()
-                        } else { throw 'Le post n\'a pas pu être modifié.' }
-                    })
-                    .then(data => { console.log(data.message); this.postText = this.editText; })
-                    .catch((err) => { console.log(err) });
+                        if(response.status == 204) { this.postText = this.editText; }
+                        else { throw 'Le post n\'a pas pu être modifié.' }
+                    });
             } else { this.inEdit = true }
         },
         deletePost() {
             fetch(store.host_api + '/post/' + this.dataPost.id, { method: 'DELETE', headers: { 'Content-type' : 'application/json', 'Authorization' : 'Bearer ' + this.userToken } })
                 .then(response => {
-                    if(response.status == 201) { return response.json()
-                    } else { throw 'Le post n\'a pas pu être supprimé.' }
-                })
-                .then(data => { console.log(data.message); this.isDeleted = true; })
-                .catch((err) => { console.log(err) });
+                    if(response.status == 204) { this.isDeleted = true; }
+                    else { throw 'La suppression du post n\'a pas pu être effective.' }
+                });
         }
     }
 }

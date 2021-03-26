@@ -47,28 +47,20 @@ export default {
                     body: JSON.stringify({txt: this.editReply})
                 })
                 .then(response => {
-                    if(response.status == 201) { return response.json()
-                    } else { throw 'Ce commentaire n\'a pas pu être modifié.' }
-                })
-                .then(data => { 
-                    this.replyTxt = this.editReply;
-                    console.log(data.message) 
-                })
-                .catch((err) => { console.log(err) });
+                    if(response.status == 204) { this.replyTxt = this.editReply; }
+                    else { throw 'Ce commentaire n\'a pas pu être modifié.' }
+                });
             }
         },
         replyDelete() {
             fetch(store.host_api + '/reply/' + this.dataReply.id, { method: 'DELETE', headers: { 'Content-type' : 'application/json', 'Authorization' : 'Bearer ' + this.userToken } })
                 .then(response => {
-                    if(response.status == 201) { return response.json()
-                    } else { throw 'Ce commentaire n\'a pas pu être supprimé.' }
-                })
-                .then(data => { 
-                    this.isDeleted = true; 
-                    this.$emit('replyDeleted')
-                    console.log(data.message)
-                })
-                .catch((err) => { console.log(err) });
+                    if(response.status == 204) { 
+                        this.isDeleted = true; 
+                        this.$emit('replyDeleted');
+                    }
+                    else { throw 'Ce commentaire n\'a pas pu être supprimé.' }
+                });
         }
     }
 }
