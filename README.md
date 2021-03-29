@@ -1,5 +1,5 @@
 # Groupomania - Réseau social d'entreprise
-<br /><font style="font-size: 18px;"><b>Projet n°7 OpenClassroom | Réalisation front/back from scratch </b></font><br /><br />
+<font style="font-size: 18px;"><b>Projet n°7 OpenClassroom | Réalisation front/back from scratch </b></font><br />
 ## Execution
 Réalisation de la partie front via <b>Vue.js CLI (3.0.7)</b><br />
 Les commandes suivantes sont à effectuer depuis le dossier racine du projet.<br /><br />
