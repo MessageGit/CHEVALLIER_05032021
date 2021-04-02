@@ -74,6 +74,17 @@ export default {
 <style lang="scss">
 @import '@/assets/style/_media.scss';
 
+.signup-valid {
+  background-color: #72c772;
+  width: 80%;
+  margin: 0 auto;
+  padding: 8px 0px 8px 0px;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 5px;
+}
+
 .auth-content .auth-form .auth-error {
   position: relative;
   margin: 0 auto;
@@ -111,7 +122,7 @@ export default {
   position: absolute;
   bottom: 0px; left: 0px;
   width: 0%; height: 2px;
-  background-color: #333;
+  background-color: #ce1d1d;
   transition-duration: 0.2s;
 }
 

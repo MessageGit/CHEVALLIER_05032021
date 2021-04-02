@@ -1,6 +1,7 @@
 <template>
   <form class="auth-form" autocomplete="off" @submit.prevent="formSubmit()"><!-- Connexion -->
     <div class="auth-error" v-if="formData.error">{{ formData.errortxt }}</div>
+    <div class="signup-valid" v-if="signupSuccess">Vous êtes maintenant inscrit(e)</div>
     <div class="input-block" @click="formData.error = 0" :class="{'email-defined' : formData.email }">
       <input type="text" name="email" class="input-form" v-model="formData.email" id="login-email" :class="{ 'input-error' : formData.error == 1 }" />
       <label for="login-username" :class="{ 'focus-label' : formData.email }">Votre e-mail</label>
@@ -24,11 +25,18 @@ export default {
   name: 'loginModal',
   props: ['alias'],
   created() {
-    if(this.alias) { this.formData.email = this.alias; }
+    if(this.alias) { 
+      this.formData.email = this.alias; 
+      this.signupSuccess = true;
+      setTimeout(() => { 
+        this.signupSuccess = false; 
+      }, 4500)
+    }
   },
   data() {
     return {
-      formData: { email: '', passwrd: '', error: 0, errortxt: '' }
+      formData: { email: '', passwrd: '', error: 0, errortxt: '' },
+      signupSuccess: false
     }
   },
   methods: {
@@ -64,7 +72,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-
-</style>
