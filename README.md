@@ -1,5 +1,5 @@
-# CHEVALLIER_7_05032021
-<br /><font style="font-size: 18px;"><b>Projet n°7 OpenClassroom | Création d'un réseau social d'entreprise (From Scratch)</b></font><br /><br />
+# Groupomania - Réseau social d'entreprise
+<font style="font-size: 18px;"><b>Projet n°7 OpenClassroom | Réalisation front/back from scratch </b></font><br />
 ## Execution
 Réalisation de la partie front via <b>Vue.js CLI (3.0.7)</b><br />
 Les commandes suivantes sont à effectuer depuis le dossier racine du projet.<br /><br />
